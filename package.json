@@ -1,0 +1,11 @@
+{
+  "name": "pepper",
+  "version": "1.0.0",
+  "description": "AppHack 2022",
+  "main": "index.js",
+  "repository": "https://gitlab.nussman.us/dylan/pepper.git",
+  "author": "Banks Nussman <banks@nussman.us>",
+  "license": "MIT",
+  "private": true,
+  "workspaces": ["api", "app"]
+}
