@@ -217,7 +217,7 @@ export function Feed() {
                     onEndReachedThreshold={0.1}
                     ListFooterComponent={renderFooter()}
                     renderItem={({ item }) => (
-                      <Post {...item} />
+                      <Post {...item} key={item.id} />
                     )}
                     refreshControl={
                         <RefreshControl
@@ -227,8 +227,8 @@ export function Feed() {
                         />
                     }
                 />
-                <Pressable _pressed={{ bg: 'red.500' }} bg='red.400' w='100px' h='100px' rounded={50} mt='-50px' alignItems='center' justifyContent='center' shadow="4" onPressIn={startRecording} onPressOut={stopRecording}>
-                    <Icon as={SimpleLineIcons} name="microphone" size={9} color="white" />
+                <Pressable userSelect={isMobile ? undefined : "none"} _pressed={{ bg: 'red.500' }} bg='red.400' w='100px' h='100px' rounded={50} mt='-50px' alignItems='center' justifyContent='center' shadow="4" onPressIn={startRecording} onPressOut={stopRecording}>
+                    <Icon userSelect={isMobile ? undefined : "none"} as={SimpleLineIcons} name="microphone" size={9} color="white" />
                 </Pressable>
             </Center>
         </Center>
