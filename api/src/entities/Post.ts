@@ -5,10 +5,6 @@ import { v4 } from "uuid";
 @ObjectType()
 @Entity()
 export class Post {
-  constructor(values: Partial<Post>) {
-    Object.assign(this, values);
-  }
-
   @Field()
   @PrimaryKey()
   id: string = v4();
@@ -19,5 +15,5 @@ export class Post {
 
   @Field()
   @Property()
-  created!: Date;
+  created: Date = new Date();
 }

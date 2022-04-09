@@ -1,9 +1,11 @@
-import { Arg, Args, Authorized, Ctx, Mutation, ObjectType, PubSub, PubSubEngine, Query, Resolver, Root, Subscription } from "type-graphql";
+import { Args, Ctx, Mutation, ObjectType, PubSub, PubSubEngine, Query, Resolver, Root, Subscription } from "type-graphql";
 import { Context } from "../utils/context";
 import { Post } from "../entities/Post";
 import { Paginated, PaginationArgs } from "../utils/paginated";
 import { PostArgs } from "./args";
 import { QueryOrder } from "@mikro-orm/core";
+import { upload } from "../utils/s3";
+import { FileUpload } from "graphql-upload";
 
 @ObjectType()
 export class PostsResponse extends Paginated(Post) {}
@@ -26,8 +28,14 @@ export class PostsResolver {
   }  
 
   @Mutation(() => Post)
-  public async createPost(@Ctx() { em }: Context, @PubSub() pubSub: PubSubEngine, @Args() args: PostArgs) {
-    const post = new Post({});
+  public async createPost(@Ctx() { em }: Context, @PubSub() pubSub: PubSubEngine, @Args() { audio }: PostArgs) {
+    const post = new Post();
+
+    const file = await (audio as unknown as Promise<FileUpload>);
+
+    const uri = await upload(file, post.id);
+
+    post.url = uri;
 
     await em.persistAndFlush(post);
 
