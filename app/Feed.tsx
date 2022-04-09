@@ -245,9 +245,7 @@ export function Feed() {
                     />
                 </Center>
                 <Pressable _pressed={{ bg: 'red.500' }} bg='red.400' w='100px' h='100px' rounded={50} mt='-50px' alignItems='center' justifyContent='center' shadow="4" onPressIn={startRecording} onPressOut={stopRecording}>
-                    <Box userSelect="none">
-                        <Icon userSelect="none" as={SimpleLineIcons} name="microphone" size={9} color="white" />
-                    </Box>
+                    {/*<Icon as={SimpleLineIcons} name="microphone" size={9} color="white" />*/}
                 </Pressable>
             </Center>
         </Center>
