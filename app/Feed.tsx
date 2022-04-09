@@ -59,7 +59,6 @@ export function Feed() {
     const count = data?.getPosts.count || 0;
 
     const getMore = () => {
-        console.log("loading morloading moree");
         const canLoadMore = posts && posts.length < count;
 
         if (!canLoadMore || isRefreshing) return;
@@ -113,7 +112,7 @@ export function Feed() {
                 });
 
                 const { recording } = await Audio.Recording.createAsync(
-                    Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+                    { ...Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY, web: { mimeType: "audio/mp4" } }
                 );
 
                 setRecording(recording);
@@ -125,7 +124,17 @@ export function Feed() {
         }
     }
 
-    async function stopRecording(){
+    async function stopRecording() {
+        /*
+        const permission = await Audio.requestPermissionsAsync();
+
+        if (permission.status !== "granted") {
+            return;
+        }
+         */
+        console.log(recording);
+        if (!recording) return;
+
         console.log("stopped recording...");
 
         await recording?.stopAndUnloadAsync();
@@ -133,7 +142,7 @@ export function Feed() {
         const finishedRecording = await recording?.createNewLoadedSoundAsync();
 
         if (!finishedRecording || !recording) {
-            return alert("error");
+            return alert("error in stopRecording");
         }
 
         const uri = recording.getURI();
