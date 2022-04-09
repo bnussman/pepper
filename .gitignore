@@ -12,3 +12,5 @@ build/
 build/**
 .expo/
 .idea/
+**/.env
+.env
