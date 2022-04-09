@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Text, Center, FlatList, VStack, Pressable, Spinner, Heading, } from 'native-base';
+import { Icon, Text, Center, FlatList, VStack, Pressable, Spinner, Heading, } from 'native-base';
 import { Audio } from 'expo-av';
 import { Recording } from 'expo-av/build/Audio';
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { CreatePostMutation, GetPostsQuery } from './generated/graphql';
 import { generateRNFile, isMobile } from './utils/constants';
 import { RefreshControl, Vibration } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons'; 
+import { SimpleLineIcons } from '@expo/vector-icons'; 
 
 const CreatePost = gql`
     mutation CreatePost($audio: Upload!) {
@@ -159,7 +161,7 @@ export function Feed() {
                 audio: real
             }
         })
-            .then(() => alert("success"))
+            .then(() => console.log("success"))
             .catch((e) => console.error(e));
 
         setRecording(undefined);
@@ -209,7 +211,7 @@ export function Feed() {
                 <Center shadow="4" rounded={25} bg='red.400' alignItems="center" justifyContent="center" w={50} h={50} mb="5%">
                     <Text bold color='white' fontSize={25} fontFamily="AppleSDGothicNeo-Bold">&#127798;</Text>
                 </Center>
-                <Center mb='15%'>
+                <Center mb='25%'>
                     <FlatList
                         data={posts || []}
                         keyExtractor={(post) => post.id}
@@ -234,7 +236,7 @@ export function Feed() {
                     />
                 </Center>
                 <Pressable _pressed={{ bg: 'red.500' }} bg='red.400' w='100px' h='100px' rounded={50} mt='-50px' alignItems='center' justifyContent='center' shadow="4" onPressIn={startRecording} onPressOut={stopRecording}>
-                    <Text>Record</Text>
+                    <Icon as={SimpleLineIcons} name="microphone" size={9} color="white" />
                 </Pressable>
             </Center>
         </Center>
