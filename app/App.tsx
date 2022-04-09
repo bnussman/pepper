@@ -1,11 +1,11 @@
-import { Text, NativeBaseProvider, Center, FlatList, VStack, Pressable, extendTheme } from 'native-base';
-import React, {useState} from 'react';
+import React, { useState } from 'react';
+import { Text, NativeBaseProvider, Center, FlatList, VStack, Pressable, } from 'native-base';
 import { Audio } from 'expo-av';
+import { Recording} from 'expo-av/build/Audio';
 
 export default function App() {
-    const [recording, setRecording] = React.useState();
-    const [recordings, setRecordings] = React.useState([]);
-    const [message, setMessage] = React.useState("");
+    const [recording, setRecording] = useState<Recording>();
+    const [recordings, setRecordings] = useState<{ sound: any, file: string | null }[]>([]);
 
     async function startRecording() {
         try {
@@ -24,7 +24,7 @@ export default function App() {
 
                 setRecording(recording);
             } else {
-                setMessage("Please grant permission to app to access microphone");
+                alert("no perms");
             }
         } catch (err) {
             console.error('Failed to start recording', err);
@@ -33,20 +33,29 @@ export default function App() {
 
     async function stopRecording(){
         console.log("stopped recording...");
-        setRecording(undefined);
-        await recording.stopAndUnloadAsync();
 
-        let updatedRecordings = [...recordings];
-        const { sound, status } = await recording.createNewLoadedSoundAsync();
+        await recording?.stopAndUnloadAsync();
+
+        const updatedRecordings = [...recordings];
+        const finishedRecording = await recording?.createNewLoadedSoundAsync();
+
+        if (!finishedRecording || !recording) {
+            return alert("error");
+        }
+
         updatedRecordings.push({
-            sound: sound,
+            sound: finishedRecording.sound,
             file: recording.getURI()
         });
 
+        setRecording(undefined);
         setRecordings(updatedRecordings);
     }
 
-    async function playAudio(uri: string) {
+    async function playAudio(uri: string | null) {
+        if (!uri) {
+            return alert("error");
+        }
         console.log('Loading Sound');
         const { sound } = await Audio.Sound.createAsync({ uri });
         console.log('Playing Sound');
@@ -65,7 +74,7 @@ export default function App() {
                             data={recordings}
                             renderItem={({ item }) => (
                                 <VStack space={recordings.length-1} alignItems="center">
-                                    <Pressable onPress={() => playAudio(item.file)} title="Play" w="64" h="60" bg="white" rounded={15} mt={3} mb={3} shadow="1" alignItems="center" justifyContent="center">
+                                    <Pressable onPress={() => playAudio(item.file)} w="64" h="60" bg="white" rounded={15} mt={3} mb={3} shadow="1" alignItems="center" justifyContent="center">
                                         <Text>{item.file}</Text>    
                                     </Pressable>
                                 </VStack>
