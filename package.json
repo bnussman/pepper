@@ -7,5 +7,17 @@
   "author": "Banks Nussman <banks@nussman.us>",
   "license": "MIT",
   "private": true,
-  "workspaces": ["api", "app"]
+  "workspaces": [
+    "api",
+    "app"
+  ],
+  "scripts": {
+    "clean": "rm -rf node-modules/ && rm -rf app/node_modules/ && rm yarn.lock",
+    "build": "yarn build:api",
+    "dev": "concurrently -n app,api -c blue,magenta,green \"yarn workspace @pepper/app start\" \"yarn workspace @pepper/api dev\"",
+    "codegen": "yarn workspace @pepper/app codegen"
+  },
+  "devDependencies": {
+    "concurrently": "^7.1.0"
+  }
 }

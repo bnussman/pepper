@@ -4,49 +4,17 @@ import express from 'express';
 import config from './mikro-orm.config';
 import Redis from 'ioredis';
 import { createServer } from 'http';
-import { Token } from "./entities/Token";
 import { buildSchema } from "type-graphql";
-import { Connection, IDatabaseDriver, MikroORM } from "@mikro-orm/core";
-import { ApolloServer, ExpressContext } from 'apollo-server-express';
+import { MikroORM } from "@mikro-orm/core";
+import { ApolloServer } from 'apollo-server-express';
 import { ApolloError, ApolloServerPluginDrainHttpServer } from 'apollo-server-core';
-import { authChecker } from "./utils/auth";
 import { ValidationError } from 'class-validator';
-import { GraphQLError, GraphQLSchema, parse } from 'graphql';
+import { GraphQLError } from 'graphql';
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import { WebSocketServer } from "ws";
 import { graphqlUploadExpress } from "graphql-upload";
 import { useServer } from 'graphql-ws/lib/use/ws';
-import { Context as WSContext, SubscribeMessage } from "graphql-ws";
 import { REDIS_HOST, REDIS_PASSWORD } from "./utils/constants";
-
-async function onSubscribe(
-  { connectionParams }: WSContext<Record<string, unknown> | undefined>,
-  msg: SubscribeMessage,
-  schema: GraphQLSchema,
-  orm: MikroORM<IDatabaseDriver<Connection>>
-) {
-  const bearer = connectionParams?.token as string | undefined;
-
-  if (!bearer) {
-    return;
-  }
-
-  const token = await orm.em.fork().findOne(
-    Token,
-    bearer,
-    {
-      populate: ['user'],
-    }
-  );
-
-  return {
-    contextValue: { user: token?.user, token },
-    schema,
-    document: parse(msg.payload.query),
-    variableValues: msg.payload.variables
-  }
-}
-
 
 export function errorFormatter(error: GraphQLError) {
   if (error?.message === "Argument Validation Error") {
@@ -66,20 +34,6 @@ export function errorFormatter(error: GraphQLError) {
   }
 
   return error;
-}
-
-async function getContext(ctx: ExpressContext, orm: MikroORM<IDatabaseDriver<Connection>>) {
-  const context = { em: orm.em.fork() };
-
-  const bearer = ctx.req.get("Authorization")?.split(" ")[1];
-
-  if (!bearer) {
-    return context;
-  }
-
-  const token = await orm.em.fork().findOne(Token, bearer, { populate: ['user'] });
-
-  return { user: token?.user, token, ...context };
 }
 
 async function startApolloServer() {
@@ -103,7 +57,6 @@ async function startApolloServer() {
   });
 
   const schema = await buildSchema({
-    authChecker: authChecker,
     resolvers: [__dirname + '/**/resolver.{ts,js}'],
     pubSub
   });
@@ -115,12 +68,11 @@ async function startApolloServer() {
 
   const serverCleanup = useServer({
     schema,
-    onSubscribe: (ctx, msg) => onSubscribe(ctx, msg, schema, orm)
   }, wsServer);
 
   const server = new ApolloServer({
     schema,
-    context: (ctx) => getContext(ctx, orm),
+    context: () => ({ em: orm.em.fork() }),
     formatError: errorFormatter,
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
@@ -142,7 +94,7 @@ async function startApolloServer() {
 
   await new Promise<void>(resolve => httpServer.listen({ port: 3001 }, resolve));
 
-  console.log(`🥑 Avocado API Server ready at \x1b[36mhttp://0.0.0.0:3001${server.graphqlPath}\x1b[0m`);
+  console.log(`🌶️  Pepper GraphQL API Server ready at \x1b[36mhttp://0.0.0.0:3001${server.graphqlPath}\x1b[0m`);
 }
 
 startApolloServer();

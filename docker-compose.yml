@@ -1,0 +1,21 @@
+version: '3.5'
+
+services:
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+  db:
+    image: mysql
+    ports:
+      - 3306:3306
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: pepper
+      MYSQL_DATABASE: pepper
+      TZ: America/New_York
+
+
+volumes:
+  db-data:
