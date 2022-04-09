@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Center, Pressable, HStack, Button, Box, IconButton } from "native-base";
+import { Text, Center, Pressable, HStack, Button, Box, IconButton } from "native-base";
 import { GetPostsQuery } from "./generated/graphql";
 import { Audio } from 'expo-av';
 import Slider from '@react-native-community/slider';
@@ -39,8 +39,8 @@ export function Post(post: Unpacked<GetPostsQuery['getPosts']['data']>) {
 
   return (
     <Center>
-      <Pressable _pressed={{ bg: 'gray.100' }}  w="64" h="60" bg="white" rounded={15} mt={3} mb={3} shadow="1" alignItems="center" justifyContent="center">
-        <HStack space={6} w="100%" justifyContent="center">
+      <Box w="300px" h="60" bg="white" rounded={15} mt={3} mb={3} shadow="1" alignItems="center" justifyContent="center">
+        <HStack space={2} w="100%" justifyContent="center" alignItems="center">
           <IconButton icon={<Ionicons name="play" size={24} color="white" />} colorScheme="red" bg="red.400" onPress={() => playAudio(post.url)} />
           <Box w="1/2">
             <Slider
@@ -51,8 +51,9 @@ export function Post(post: Unpacked<GetPostsQuery['getPosts']['data']>) {
               minimumTrackTintColor="gray"
             />
           </Box>
+          <Text color="gray.500">{new Date(post.created).toLocaleTimeString([], { timeStyle: 'short' })}</Text>
         </HStack>
-      </Pressable>
+      </Box>
     </Center>
 
   );
