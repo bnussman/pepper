@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Icon, Text, Center, FlatList, VStack, Pressable, Spinner, Heading } from 'native-base';
+import { Icon, Text, Center, FlatList, VStack, Pressable, Spinner, Heading, Box } from 'native-base';
 import { Audio } from 'expo-av';
 import { Recording } from 'expo-av/build/Audio';
 import { gql, useMutation, useQuery } from '@apollo/client';
@@ -7,6 +7,7 @@ import { CreatePostMutation, GetPostsQuery } from './generated/graphql';
 import { generateRNFile, isMobile } from './utils/constants';
 import { RefreshControl, Vibration } from 'react-native';
 import { SimpleLineIcons } from '@expo/vector-icons'; 
+import { Post } from './Post';
 
 const CreatePost = gql`
     mutation CreatePost($audio: Upload!) {
@@ -175,17 +176,6 @@ export function Feed() {
         setRecording(undefined);
     }
 
-    async function playAudio(uri: string | null) {
-        if (!uri) {
-            return alert("error");
-        }
-        await Audio.setAudioModeAsync({
-            allowsRecordingIOS: false,
-        });
-        const { sound } = await Audio.Sound.createAsync({ uri });
-        await sound.playAsync();
-    }
-
     const renderFooter = () => {
         if (!isRefreshing) return null;
 
@@ -214,35 +204,29 @@ export function Feed() {
     }
 
     return (
-        <Center bg='hsl(0, 0%, 97%)' h='100%'>
-            <Center h='70%'>
-                <Center shadow="4" rounded={25} bg='red.400' alignItems="center" justifyContent="center" w={50} h={50} mb="5%">
-                    <Text bold color='white' fontSize={25} fontFamily="AppleSDGothicNeo-Bold">&#127798;</Text>
-                </Center>
-                <Center mb='25%'>
-                    <FlatList
-                        data={posts || []}
-                        keyExtractor={(post) => post.id}
-                        onEndReached={getMore}
-                        onEndReachedThreshold={0.1}
-                        ListFooterComponent={renderFooter()}
-                        renderItem={({ item }) => (
-                            <VStack space={4} alignItems="center">
-                                <Pressable _pressed={{ bg: 'gray.100' }} onPress={() => playAudio(item.url)} w="64" h="60" bg="white" rounded={15} mt={3} mb={3} shadow="1" alignItems="center" justifyContent="center">
-                                    <Text>{new Date(item.created).toLocaleTimeString()}</Text>    
-                                </Pressable>
-                            </VStack>
-                        )}
-                        refreshControl={
-                            <RefreshControl
-                                tintColor="#cfcfcf"
-                                refreshing={isRefreshing}
-                                onRefresh={refetch}
-                            />
-                        }
-
-                    />
-                </Center>
+        <Center bg='hsl(0, 0%, 97%)' h="100%">
+            <Center shadow="4" rounded={25} bg='red.400' alignItems="center" justifyContent="center" w={50} h={50} mb={6}>
+                <Text bold color='white' fontSize={25} fontFamily="AppleSDGothicNeo-Bold">&#127798;</Text>
+            </Center>
+            <Center h={600} w="100%">
+                <FlatList
+                    w="100%"
+                    data={posts || []}
+                    keyExtractor={(post) => post.id}
+                    onEndReached={getMore}
+                    onEndReachedThreshold={0.1}
+                    ListFooterComponent={renderFooter()}
+                    renderItem={({ item }) => (
+                      <Post {...item} />
+                    )}
+                    refreshControl={
+                        <RefreshControl
+                            tintColor="#cfcfcf"
+                            refreshing={isRefreshing}
+                            onRefresh={refetch}
+                        />
+                    }
+                />
                 <Pressable _pressed={{ bg: 'red.500' }} bg='red.400' w='100px' h='100px' rounded={50} mt='-50px' alignItems='center' justifyContent='center' shadow="4" onPressIn={startRecording} onPressOut={stopRecording}>
                     <Icon as={SimpleLineIcons} name="microphone" size={9} color="white" />
                 </Pressable>
