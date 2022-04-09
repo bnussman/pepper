@@ -39,13 +39,13 @@ export class PostsResolver {
 
     await em.persistAndFlush(post);
 
-    pubSub.publish("create-post", post);
+    pubSub.publish("new-post", post);
 
     return post;
   }
 
-  @Subscription(() => Post, { topics: "create-post" })
-  public addPost(@Root() post: Post): Post {
-    return post;
+  @Subscription(() => Post, { topics: "new-post" })
+  public newPost(@Root() post: Post): Post {
+    return { ...post, created: new Date(post.created) };
   }
 }
