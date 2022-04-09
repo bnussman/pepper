@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Icon, Text, Center, FlatList, VStack, Pressable, Spinner, Heading, } from 'native-base';
+import { Icon, Text, Center, FlatList, VStack, Pressable, Spinner, Heading, Box, } from 'native-base';
 import { Audio } from 'expo-av';
 import { Recording } from 'expo-av/build/Audio';
 import { gql, useMutation, useQuery } from '@apollo/client';
@@ -245,7 +245,9 @@ export function Feed() {
                     />
                 </Center>
                 <Pressable _pressed={{ bg: 'red.500' }} bg='red.400' w='100px' h='100px' rounded={50} mt='-50px' alignItems='center' justifyContent='center' shadow="4" onPressIn={startRecording} onPressOut={stopRecording}>
-                    <Icon as={SimpleLineIcons} name="microphone" size={9} color="white" />
+                    <Box userSelect="none">
+                        <Icon userSelect="none" as={SimpleLineIcons} name="microphone" size={9} color="white" />
+                    </Box>
                 </Pressable>
             </Center>
         </Center>
