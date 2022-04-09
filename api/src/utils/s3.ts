@@ -7,15 +7,15 @@ const client = new S3({
   endpoint: "https://us-southeast-1.linodeobjects.com"
 });
 
-export async function upload({ filename, createReadStream }: FileUpload, userId: string): Promise<string> {
+export async function upload({ filename, createReadStream }: FileUpload, id: string): Promise<string> {
   const extention = getFileExtention(filename);
 
-  const Key = `profiles/${userId}-${Date.now()}${extention}`;
+  const Key = `${id}${extention}`;
 
   const params = {
     Key,
     Body: createReadStream(),
-    Bucket: "avocado",
+    Bucket: "pepper",
     ACL: "public-read"
   };
 

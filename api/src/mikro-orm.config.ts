@@ -17,5 +17,5 @@ export default {
       }
     }
   } : undefined,
-  // clientUrl: `mysql://root@db:3306/avocado`,
+  // clientUrl: `mysql://root@db:3306/pepper`,
 } as unknown as Configuration<IDatabaseDriver<Connection>>
